@@ -186,6 +186,10 @@ Create transformation matrices:
     Wy = py - (d6 + l) * ly		
     Wz = pz - (d6 + l) * lz
 ```
+ _calculate theta 1 angle_
+```
+    theta1 = atan2(Wy, Wx)
+```
  _calculate beda angle_
 ```
     s = Wz - dh['d1'] 
@@ -200,7 +204,7 @@ Create transformation matrices:
     D = (distance_c ** 2 - distance_a ** 2 - distance_b ** 2) / (2 * distance_a * distance_b)
     theta3 = atan2(D, sqrt(1 - D ** 2))
     alpha = atan2(distance_b + distance_a * cos(theta3), distance_a * sin(theta3))
-    theta2 = alpha
+    theta2 = beta - alpha
 ```
 ### Project Implementation
 
