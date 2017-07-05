@@ -38,7 +38,7 @@ $ git clone https://github.com/udacity/RoboND-Kinematics-Project.git
 Now from a terminal window:
 
 ```sh
-$ cd ~/catkin_ws
+$ cd ~/catkin_ws or cd ..
 $ rosdep install --from-paths src --ignore-src --rosdistro=kinetic -y
 $ cd ~/catkin_ws/src/RoboND-Kinematics-Project/kuka_arm/scripts
 $ sudo chmod +x target_spawn.py
