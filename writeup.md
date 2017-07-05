@@ -39,12 +39,15 @@ Here is an example of how to include an image in your writeup.
 
 #### 2. Using the DH parameter table you derived earlier, create individual transformation matrices about each joint. In addition, also generate a generalized homogeneous transform between base_link and gripper_link using only end-effector(gripper) pose.
 
-Here's | A | Snappy | Table
---- | --- | --- | ---
-1 | `highlight` | **bold** | 7.41
-2 | a | b | c
-3 | *italic* | text | 403
-4 | 2 | 3 | abcd
+i | alpha(i-1) | a (i-1) | d (i) | q (i)
+--- | --- | --- | --- | ---
+1 | 0| 0 | 0.75| 
+2 | -pi/2| 0.35| 0| -pi/2
+3 | 0| 1.25| 0|
+4 | -pi/2| -0.054| 1.50| 
+5 | pi/2| 0|  0|
+6 | -pi/2| 0| 0|
+7 |  0| 0| 0.303| 0
 
 #### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
 
