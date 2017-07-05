@@ -20,22 +20,12 @@
 [image2]: ./misc_images/misc2.png
 [image3]: ./misc_images/misc3.png
 
-[//]: ## [Rubric](https://review.udacity.com/#!/rubrics/972/view) Points
-[//]: ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
-
----
-[//]: ### Writeup / README
-
-[//]: #### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  
-
-[//]: You're reading it!
-
 ### Kinematic Analysis
 #### 1. Run the forward_kinematics demo and evaluate the kr210.urdf.xacro file to perform kinematic analysis of Kuka KR210 robot and derive its DH parameters.
 
 ![alt text][image1]
 
-#### 2. Using kr210.urdf.xacro file to derive a DH parameter table.
+#### 2. Using kr210.urdf.xacro file to figure out the parameters in the DH parameter table.
 The data in kr210.urdf.xacro
 
 ```
@@ -115,8 +105,65 @@ i | alpha(i-1) | a (i-1) | d (i) | q (i)
 6 | -pi/2| 0| 0|
 7 |  0| 0| 0.303| 0
 
-#### 3. Using the DH parameter table you derived earlier, create individual transformation matrices about each joint. In addition, also generate a generalized homogeneous transform between base_link and gripper_link using only end-effector(gripper) pose.
-#### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
+#### 3. Using the DH parameter table you derived earlier, create individual transformation matrices about each joint. 
+Create transformation matrices:
+```
+    T0_1 = Matrix([[		    cos(q1),		 -sin(q1),		0,		a0],
+			   [	sin(q1)*cos(alpha0),  cos(q1)*cos(alpha0),   -sin(alpha0), -sin(alpha0)*d1],
+			   [	sin(q1)*sin(alpha0),  cos(q1)*sin(alpha0),    cos(alpha0),  cos(alpha0)*d1],
+			   [			  0,  		 	0,   		0, 		 1]])
+
+    T1_2 = Matrix([[		    cos(q2),		 -sin(q2),		0,		a1],
+			   [	sin(q2)*cos(alpha1),  cos(q2)*cos(alpha1),   -sin(alpha1), -sin(alpha1)*d2],
+			   [	sin(q2)*sin(alpha1),  cos(q2)*sin(alpha1),    cos(alpha1),  cos(alpha1)*d2],
+			   [			  0,  		 	0,   		0, 		 1]])
+
+    T2_3 = Matrix([[		    cos(q3),		 -sin(q3),		0,		a2],
+			   [	sin(q3)*cos(alpha2),  cos(q3)*cos(alpha2),   -sin(alpha2), -sin(alpha2)*d3],
+			   [	sin(q3)*sin(alpha2),  cos(q3)*sin(alpha2),    cos(alpha2),  cos(alpha2)*d3],
+			   [			  0,  		 	0,   		0, 		 1]])
+
+    T3_4 = Matrix([[		    cos(q4),		 -sin(q4),		0,		a3],
+			   [	sin(q4)*cos(alpha3),  cos(q4)*cos(alpha3),   -sin(alpha3), -sin(alpha3)*d4],
+			   [	sin(q4)*sin(alpha3),  cos(q4)*sin(alpha3),    cos(alpha3),  cos(alpha3)*d4],
+			   [			  0,  		 	0,   		0, 		 1]])
+
+    T4_5 = Matrix([[		    cos(q5),		 -sin(q5),		0,		a4],
+			   [	sin(q5)*cos(alpha4),  cos(q5)*cos(alpha4),   -sin(alpha4), -sin(alpha4)*d5],
+			   [	sin(q5)*sin(alpha4),  cos(q5)*sin(alpha4),    cos(alpha4),  cos(alpha4)*d5],
+			   [			  0,  		 	0,   		0, 		 1]])
+
+    T5_6 = Matrix([[		    cos(q6),		 -sin(q6),		0,		a5],
+			   [	sin(q6)*cos(alpha5),  cos(q6)*cos(alpha5),   -sin(alpha5), -sin(alpha5)*d6],
+			   [	sin(q6)*sin(alpha5),  cos(q6)*sin(alpha5),    cos(alpha5),  cos(alpha5)*d6],
+			   [			  0,  		 	0,   		0, 		 1]])
+
+    T6_G = Matrix([[		    cos(q7),		 -sin(q7),		0,		a6],
+			   [	sin(q7)*cos(alpha6),  cos(q7)*cos(alpha6),   -sin(alpha6), -sin(alpha6)*d7],
+			   [	sin(q7)*sin(alpha6),  cos(q7)*sin(alpha6),    cos(alpha6),  cos(alpha6)*d7],
+			   [			  0,  		 	0,   		0, 		 1]])
+```
+
+```
+    T0_1 = T0_1.subs(dh)
+    T1_2 = T1_2.subs(dh)
+    T2_3 = T2_3.subs(dh)
+    T3_4 = T3_4.subs(dh)
+    T4_5 = T4_5.subs(dh)	    
+    T5_6 = T5_6.subs(dh)
+    T6_G = T6_G.subs(dh)
+```
+
+#### 4. Generating a generalized homogeneous transform between base_link and gripper_link using only end-effector(gripper) pose.
+```
+	    T0_2 = simplify(T0_1 * T1_2)
+	    T0_3 = simplify(T0_2 * T2_3)
+	    T0_4 = simplify(T0_3 * T3_4)
+	    T0_5 = simplify(T0_4 * T4_5)
+	    T0_6 = simplify(T0_5 * T5_6)
+	    T0_G = simplify(T0_6 * T6_G)
+```
+#### 5. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
 
 And here's another image! 
 
