@@ -37,6 +37,7 @@
 
 #### 2. Using kr210.urdf.xacro file to derive a DH parameter table.
 The data in kr210.urdf.xacro
+'''
  <joint name="gripper_joint" type="fixed">
     <parent link="link_6"/>
     <child link="gripper_link"/>
@@ -99,7 +100,7 @@ a3 = -0.054 = z(joint4)
 d1 = 0.75 = 0.33 + 0.42 = z(joint1) + z(joint2)
 d4 = 1.5 = 0.96 + 0.54 = x(joint4) + x(joint5)
 d7 = 0.303 = 0.11 + 0.193 = x(gripper_joint) + x(joint6)
-
+'''
 --------------
 
 i | alpha(i-1) | a (i-1) | d (i) | q (i)
