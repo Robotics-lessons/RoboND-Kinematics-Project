@@ -192,6 +192,16 @@ Create transformation matrices:
     r = sqrt(Wx*Wx+Wy*Wy)
     beta = atan2(s, r)
 ```
+ _Use beta to calculate theta2 and theta3_
+```
+    distance_c = sqrt(Wx**2+Wy**2+s**2)
+    distance_a = dh['d4']
+    distance_b = dh['a2'] - dh['a3']
+    D = (distance_c ** 2 - distance_a ** 2 - distance_b ** 2) / (2 * distance_a * distance_b)
+    theta3 = atan2(D, sqrt(1 - D ** 2))
+    alpha = atan2(distance_b + distance_a * cos(theta3), distance_a * sin(theta3))
+    theta2 = alpha
+```
 ### Project Implementation
 
 #### 1. Fill in the `IK_server.py` file with properly commented python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. Your code must guide the robot to successfully complete 8/10 pick and place cycles. Briefly discuss the code you implemented and your results. 
