@@ -151,6 +151,7 @@ def handle_calculate_IK():
     d6 = dh['d6']
     l =  dh['d7']
     print("d6 = %s, i = %s" % (d6, l))
+#calculate l for x, y, z position
     lx = cos(roll) * cos(pitch)
     ly = sin(roll) * cos(pitch)
     lz = -sin(roll)
