@@ -164,11 +164,34 @@ Create transformation matrices:
 	    T0_G = simplify(T0_6 * T6_G)
 ```
 #### 5. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
-
-And here's another image! 
-
-![alt text][image2]
-
+ px,py,pz = end-effector position
+ x, y, z, w = end-effector orientation parameters
+ roll, pitch, yaw = end-effector orientation
+```
+(roll, pitch, yaw) = tf.transformations.euler_from_quaternion([x, y, z, w])
+```
+ Calculate joint angles using Geometric IK method
+ 
+ _calculate l for x, y, z position_
+```
+    lx = cos(roll) * cos(pitch)
+    ly = sin(roll) * cos(pitch)
+    lz = -sin(roll)
+```
+ _calculate wrist center for x, y, z position_
+```
+    d6 = dh['d6']
+    l =  dh['d7']
+    Wx = px - (d6 + l) * lx 
+    Wy = py - (d6 + l) * ly		
+    Wz = pz - (d6 + l) * lz
+```
+ _calculate beda angle_
+```
+    s = Wz - dh['d1'] 
+    r = sqrt(Wx*Wx+Wy*Wy)
+    beta = atan2(s, r)
+```
 ### Project Implementation
 
 #### 1. Fill in the `IK_server.py` file with properly commented python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. Your code must guide the robot to successfully complete 8/10 pick and place cycles. Briefly discuss the code you implemented and your results. 
