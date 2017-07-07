@@ -253,6 +253,17 @@ Create transformation matrices:
     Rrpy = simplify(R_roll * R_pitch * R_yaw)
 
 ```
+ _Calculatr R3-6_
+```
+    R3_6 = simplify(R0_3.inv() * Rrpy)
+```
+ _Calculate theta4, theta5 and theta6_ 
+```
+    theta5 = atan2(-R3_6[2,0], sqrt(R3_6[0,0]*R3_6[0,0] + R3_6[1,0]*R3_6[1,0]))
+    theta6 = atan2(R3_6[2,1], R3_6[2,2])
+    theta6 = atan2(R3_6[1,0], R3_6[1,1])
+```
+
 
 ### Project Implementation
 
