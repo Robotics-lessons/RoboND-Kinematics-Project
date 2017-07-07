@@ -176,8 +176,6 @@ def handle_calculate_IK(req):
     	    theta3 = atan2(D, sqrt(1 - D ** 2))
     	    alpha = atan2(distance_b + distance_a * cos(theta3), distance_a * sin(theta3))
     	    theta2 = beta - alpha
-	    rospy.loginfo("theta2 = %s" % theta2)
-	    rospy.loginfo("theta3 = %s" % theta3)
 	    dh['q1'] = theta1
 	    dh['q2'] = theta2-np.pi/2
 	    dh['q3'] = theta3
@@ -187,15 +185,15 @@ def handle_calculate_IK(req):
 	    rospy.loginfo("dh = %s" % dh)  
 	    T0_1 = create_T_matrics(dh['alpha0'], dh['a0'], dh['d1'], dh['q1'])
 	    R0_1 = T0_1.extract([0,1,2],[0,1,2])
-	    rospy.loginfo("R0_1 = %s" % R0_1) 
+	 #   rospy.loginfo("R0_1 = %s" % R0_1) 
 	    T1_2 = create_T_matrics(dh['alpha1'], dh['a1'], dh['d2'], dh['q2'])
 	    R1_2 = T1_2.extract([0,1,2],[0,1,2])
-	    rospy.loginfo("R1_2 = %s" % R1_2) 
+	 #   rospy.loginfo("R1_2 = %s" % R1_2) 
 	    T2_3 = create_T_matrics(dh['alpha2'], dh['a2'], dh['d3'], dh['q3'])
 	    R2_3 = T2_3.extract([0,1,2],[0,1,2])
-	    rospy.loginfo("R2_3 = %s" % R2_3) 
+	#    rospy.loginfo("R2_3 = %s" % R2_3) 
 	    R0_3 = simplify(R0_1 * R1_2 * R2_3)
-	    rospy.loginfo("R0_3 = %s" % R0_3) 
+	#    rospy.loginfo("R0_3 = %s" % R0_3) 
 
 # Build Rrpy
 	    R_roll = Matrix([[  1,	    0,	          0],
@@ -208,7 +206,7 @@ def handle_calculate_IK(req):
 			   [   sin(yaw),  cos(yaw), 	0],
 			   [	       0,   	 0,     1]])
 	    Rrpy = simplify(R_roll * R_pitch * R_yaw)
-	    rospy.loginfo("Rrpy = %s" % Rrpy) 
+#	    rospy.loginfo("Rrpy = %s" % Rrpy) 
 
 # Calculate R3_6 using inv(R0_3) * Rrpy
 	    R3_6 = simplify(R0_3.inv() * Rrpy)
@@ -225,6 +223,12 @@ def handle_calculate_IK(req):
 	    theta4 = alpha
 	    theta5 = beta
 	    theta6 = gamma
+	    rospy.loginfo("theta1 = %s" % theta1)
+	    rospy.loginfo("theta2 = %s" % theta2)
+	    rospy.loginfo("theta3 = %s" % theta3)
+	    rospy.loginfo("theta4 = %s" % theta4)
+	    rospy.loginfo("theta5 = %s" % theta5)
+	    rospy.loginfo("theta6 = %s" % theta6)
 
             # Populate response for the IK request
             # In the next line replace theta1,theta2...,theta6 by your joint angle variables
