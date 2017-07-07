@@ -187,12 +187,15 @@ def handle_calculate_IK(req):
 	    rospy.loginfo("dh = %s" % dh)  
 	    T0_1 = create_T_matrics(dh['alpha0'], dh['a0'], dh['d1'], "q1")
 	    R0_1 = T0_1.extract([0,1,2],[0,1,2])
+	    rospy.loginfo("R0_1 = %s" % R0_1) 
 	    T1_2 = create_T_matrics(dh['alpha1'], dh['a1'], dh['d2'], "q2")
 	    R1_2 = T1_2.extract([0,1,2],[0,1,2])
+	    rospy.loginfo("R1_2 = %s" % R1_2) 
 	    T2_3 = create_T_matrics(dh['alpha2'], dh['a2'], dh['d3'], "q3")
 	    R2_3 = T2_3.extract([0,1,2],[0,1,2])
-
+	    rospy.loginfo("R2_3 = %s" % R2_3) 
 	    R0_3 = simplify(R0_1 * R1_2 * R2_3)
+	    rospy.loginfo("R0_3 = %s" % R0_3) 
 
 # Build Rrpy
 	    R_roll = Matrix([[  1,	    0,	          0],
@@ -205,6 +208,8 @@ def handle_calculate_IK(req):
 			   [   sin(yaw),  cos(yaw), 	0],
 			   [	       0,   	 0,     1]])
 	    Rrpy = simplify(R_roll * R_pitch * R_yaw)
+	    rospy.loginfo("Rrpy = %s" % Rrpy) 
+
 # Calculate R3_6 using inv(R0_3) * Rrpy
 	    R3_6 = simplify(R0_3.inv() * Rrpy)
 
