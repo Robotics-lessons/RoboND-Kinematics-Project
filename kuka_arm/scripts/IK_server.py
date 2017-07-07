@@ -157,7 +157,7 @@ def handle_calculate_IK(req):
             lx = cos(roll) * cos(pitch)
             ly = sin(roll) * cos(pitch)
     	    lz = -sin(roll)
-
+#calculate  wrist center x, y, z position
     	    Wx = px - (d6 + l) * lx 
     	    Wy = py - (d6 + l) * ly			
     	    Wz = pz - (d6 + l) * lz
@@ -185,38 +185,16 @@ def handle_calculate_IK(req):
 #	    dh['q5'] = 'q5'
 #	    dh['q6'] = 'q6'
 	    rospy.loginfo("dh = %s" % dh)  
-	    R0_1 = Matrix([[		    cos(q1),		 -sin(q1),		0],
-			   [	sin(q1)*cos(alpha0),  cos(q1)*cos(alpha0),   -sin(alpha0)],
-			   [	sin(q1)*sin(alpha0),  cos(q1)*sin(alpha0),    cos(alpha0)]])
+	    T0_1 = create_T_matrics(dh['alpha0'], dh['a0'], dh['d1'], "q1")
+	    R0_1 = T0_1.extract([0,1,2],[0,1,2])
+	    T1_2 = create_T_matrics(dh['alpha1'], dh['a1'], dh['d2'], "q2")
+	    R1_2 = T1_2.extract([0,1,2],[0,1,2])
+	    T2_3 = create_T_matrics(dh['alpha2'], dh['a2'], dh['d3'], "q3")
+	    R2_3 = T2_3.extract([0,1,2],[0,1,2])
 
-	    R1_2 = Matrix([[		    cos(q2),		 -sin(q2),		0],
-			   [	sin(q2)*cos(alpha1),  cos(q2)*cos(alpha1),   -sin(alpha1)],
-			   [	sin(q2)*sin(alpha1),  cos(q2)*sin(alpha1),    cos(alpha1)]])
-
-	    R2_3 = Matrix([[		    cos(q3),		 -sin(q3),		0],
-			   [	sin(q3)*cos(alpha2),  cos(q3)*cos(alpha2),   -sin(alpha2)],
-			   [	sin(q3)*sin(alpha2),  cos(q3)*sin(alpha2),    cos(alpha2)]])
-
-	    R3_4 = Matrix([[		    cos(q4),		 -sin(q4),		0],
-			   [	sin(q4)*cos(alpha3),  cos(q1)*cos(alpha3),   -sin(alpha3)],
-			   [	sin(q4)*sin(alpha3),  cos(q1)*sin(alpha3),    cos(alpha3)]])
-
-	    R4_5 = Matrix([[		    cos(q5),		 -sin(q5),		0],
-			   [	sin(q5)*cos(alpha4),  cos(q2)*cos(alpha4),   -sin(alpha4)],
-			   [	sin(q5)*sin(alpha4),  cos(q2)*sin(alpha4),    cos(alpha4)]])
-
-	    R5_6 = Matrix([[		    cos(q6),		 -sin(q6),		0],
-			   [	sin(q6)*cos(alpha5),  cos(q3)*cos(alpha5),   -sin(alpha5)],
-			   [	sin(q6)*sin(alpha5),  cos(q3)*sin(alpha5),    cos(alpha5)]])
-
-	    R0_1 = R0_1.subs(dh)
-	    R1_2 = R1_2.subs(dh)
-	    R2_3 = R2_3.subs(dh)
-	    R3_4 = R3_4.subs(dh)
-	    R4_5 = R4_5.subs(dh)
-	    R5_6 = R5_6.subs(dh)
 	    R0_3 = simplify(R0_1 * R1_2 * R2_3)
-	    R3_6_smibol = simplify(R3_4 * R4_5 * R5_6)
+
+# Build Rrpy
 	    R_roll = Matrix([[  1,	    0,	          0],
 			   [	0,  cos(roll),   -sin(roll)],
 			   [	0,  sin(roll),    cos(roll)]])
@@ -227,27 +205,21 @@ def handle_calculate_IK(req):
 			   [   sin(yaw),  cos(yaw), 	0],
 			   [	       0,   	 0,     1]])
 	    Rrpy = simplify(R_roll * R_pitch * R_yaw)
-
+# Calculate R3_6 using inv(R0_3) * Rrpy
 	    R3_6 = simplify(R0_3.inv() * Rrpy)
 
 	    rospy.loginfo("R3_6 = %s" % R3_6) 
-	    rospy.loginfo("R3_6_smibol = %s" % R3_6_smibol) 
-#	    rospy.loginfo("R3_6[0,0] = %s" % R3_6[0,0]) 
-#	    rospy.loginfo("R3_6[0,1] = %s" % R3_6[0,1]) 
-#	    rospy.loginfo("R3_6[0,2] = %s" % R3_6[0,2]) 
-#	    rospy.loginfo("R3_6[1,2] = %s" % R3_6[1,2]) 
 
-#	    beta = atan2(-R3_6[2,0], sqrt(R3_6[0,0]*R3_6[0,0] + R3_6[1,0]*R3_6[1,0]))*rtd
+	    beta = atan2(-R3_6[2,0], sqrt(R3_6[0,0]*R3_6[0,0] + R3_6[1,0]*R3_6[1,0]))
 #	    rospy.loginfo("beta = %s" % beta) 
-#	    gamma = atan2(R3_6[2,1], R3_6[2,2])*rtd
+	    gamma = atan2(R3_6[2,1], R3_6[2,2])
 #	    rospy.loginfo("gamma = %s" % gamma) 
-#	    alpha = atan2(R3_6[1,0], R3_6[1,1])*rtd
+	    alpha = atan2(R3_6[1,0], R3_6[1,1])
 #	    rospy.loginfo("alpha = %s" % alpha) 
 	    rospy.loginfo("--------------------------------------------") 
-	    theta4 = 0.0
-
-	    theta5 = 0.0
-	    theta6 = 0.0
+	    theta4 = alpha
+	    theta5 = beta
+	    theta6 = gamma
 
             # Populate response for the IK request
             # In the next line replace theta1,theta2...,theta6 by your joint angle variables
