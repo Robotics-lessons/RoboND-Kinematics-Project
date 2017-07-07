@@ -19,7 +19,7 @@ from geometry_msgs.msg import Pose
 from mpmath import *
 from sympy import *
 
-# Create a T matrics function
+# Create a Transformation matrics function
 def create_T_matrics(alpha, a, d, q):
     T_matrics = Matrix([[	    cos(q),		-sin(q),	     0,		a],
 		[sin(q)*cos(alpha),  cos(q)*cos(alpha),   -sin(alpha), -sin(alpha)*d],
@@ -53,7 +53,7 @@ def handle_calculate_IK(req):
 	    alpha0, alpha1, alpha2, alpha3, alpha4, alpha5, alpha6 =  symbols('alpha0:7')
      
             # Modified DH params
-   dh = {'alpha0':	    0,  'a0':	  0,  'd1':	 0.75, 
+   	    dh = {'alpha0':	    0,  'a0':	  0,  'd1':	 0.75, 
 		'alpha1':    -np.pi/2,  'a1':   0.35, 'd2':     0, 'q2':   -np.pi/2,
 		'alpha2':		    0,  'a2':   1.25, 'd3':     0, 
 		'alpha3':    -np.pi/2,  'a3': -0.054, 'd4':  1.50, 
@@ -120,18 +120,18 @@ def handle_calculate_IK(req):
 #	    rospy.loginfo("T0_G = %s" % T0_G)  
 
 	    # Define a correction between Gripper Link and DH convertion
-	    R_z = Matrix([[	cos(np.pi),    -sin(np.pi),		0,	0],
-			  [	sin(np.pi),	cos(np.pi),		0,	0],
-			  [		 0,		 0,		1,	0],
-			  [		 0,		 0,		0,	1]])
+#	    R_z = Matrix([[	cos(np.pi),    -sin(np.pi),		0,	0],
+#			  [	sin(np.pi),	cos(np.pi),		0,	0],
+#			  [		 0,		 0,		1,	0],
+#			  [		 0,		 0,		0,	1]])
 
-	    R_y = Matrix([[  cos(-np.pi/2),    		 0, sin(-np.pi/2),	0],
-			  [		 0,		 1,		0,	0],
-			  [ -sin(-np.pi/2),	         0, cos(-np.pi/2),	0],
-			  [		 0,		 0,		0,	1]])	
+#	    R_y = Matrix([[  cos(-np.pi/2),    		 0, sin(-np.pi/2),	0],
+#			  [		 0,		 1,		0,	0],
+#			  [ -sin(-np.pi/2),	         0, cos(-np.pi/2),	0],
+#			  [		 0,		 0,		0,	1]])	
 
 	    # Create a correction matrix
-	    R_correct = simplify(R_z * R_y)
+#	    R_correct = simplify(R_z * R_y)
 
 	    # Get a final matrix to convert input postion paramters to output angle parameters
 #	    R_final = simplify(T0_G * R_correct)
@@ -149,27 +149,37 @@ def handle_calculate_IK(req):
                     req.poses[x].orientation.z, req.poses[x].orientation.w])
 #     	    rospy.loginfo("Received %s eef-poses.orientation from the plan" % req.poses[x].orientation)
             # Calculate joint angles using Geometric IK method
-	    theta1 = atan2(py, px)*rtd
-	    rospy.loginfo("theta1 = %s" % theta1)
-	    d6 = dh['d6']
-	    Wx = px - d6 * roll
-	    Wy = py - d6 * pitch			
-	    Wz = pz - d6 * yaw	
-	    s = Wz - (dh['d1'] + dh['a2'] - dh['a3'])
+
+    	    d6 = dh['d6']
+    	    l =  dh['d7']
+
+#calculate l for x, y, z position
+            lx = cos(roll) * cos(pitch)
+            ly = sin(roll) * cos(pitch)
+    	    lz = -sin(roll)
+
+    	    Wx = px - (d6 + l) * lx 
+    	    Wy = py - (d6 + l) * ly			
+    	    Wz = pz - (d6 + l) * lz
+	    theta1 = atan2(Wy, Wx)
+	    rospy.loginfo("theta1 = %s" % theta1)	   
+	    s = Wz - dh['d1']
 	    r = sqrt(Wx**2+Wy**2)
 	    rospy.loginfo("s = %s" % s)
 	    rospy.loginfo("r = %s" % r)
-	    angle2 = atan2(s, r)
-	    distance_c = sqrt(Wx**2+Wy**2+s**2)
-#	    rospy.loginfo("d4 = %s" % dh['d4'])
-	    distance_a = dh['d4']
-	    distance_b = dh['a2'] - dh['a3']
-	    theta2 = (acos((distance_b**2+distance_c**2-distance_a**2)/(2*distance_b*distance_c)) + angle2)*rtd
+   	    beta = atan2(s, r)
+    	    distance_c = sqrt(Wx**2+Wy**2+s**2)
+#	    print("d4 = %s" % dh['d4'])
+    	    distance_a = dh['d4']
+    	    distance_b = dh['a2'] - dh['a3']
+    	    D = (distance_c ** 2 - distance_a ** 2 - distance_b ** 2) / (2 * distance_a * distance_b)
+    	    theta3 = atan2(D, sqrt(1 - D ** 2))
+    	    alpha = atan2(distance_b + distance_a * cos(theta3), distance_a * sin(theta3))
+    	    theta2 = beta - alpha
 	    rospy.loginfo("theta2 = %s" % theta2)
-	    theta3 = (acos((distance_a**2+distance_c**2-distance_b**2)/(2*distance_a*distance_c)) - angle2)*rtd
 	    rospy.loginfo("theta3 = %s" % theta3)
 	    dh['q1'] = theta1
-	    dh['q2'] = theta2
+	    dh['q2'] = theta2-np.pi/2
 	    dh['q3'] = theta3
 #	    dh['q4'] = 'q4'
 #	    dh['q5'] = 'q5'
