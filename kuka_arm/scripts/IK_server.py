@@ -45,13 +45,14 @@ def handle_calculate_IK(req):
 	    alpha0, alpha1, alpha2, alpha3, alpha4, alpha5, alpha6 =  symbols('alpha0:7')
      
             # Modified DH params
-	    dh = {'alpha0':	0,  'a0':	0.33, 'd1':	0, 'q1':       0,
-		'alpha1':    -np.pi/2,  'a1':      0.42, 'd2':  0.35, 'q2':   -np.pi/2,
-		'alpha2':	0,   'a2':      1.25, 'd3':     0, 'q3':       0,
-		'alpha3':    -np.pi/2,  'a3':    -0.054, 'd4':  0.96, 
-		'alpha4':     np.pi/2,  'a4':         0, 'd5':  0.54, 
-		'alpha5':    -np.pi/2,  'a5':         0, 'd6': 0.193, 
-		'alpha6':        0,  'a6':         0, 'd7':0.0375, 'q7':       0}
+   dh = {'alpha0':	    0,  'a0':	  0,  'd1':	 0.75, 
+		'alpha1':    -np.pi/2,  'a1':   0.35, 'd2':     0, 'q2':   -np.pi/2,
+		'alpha2':		    0,  'a2':   1.25, 'd3':     0, 
+		'alpha3':    -np.pi/2,  'a3': -0.054, 'd4':  1.50, 
+		'alpha4':     np.pi/2,  'a4':      0, 'd5':     0, 
+		'alpha5':    -np.pi/2,  'a5':      0, 'd6':     0, 
+		'alpha6':           0,  'a6':      0, 'd7': 0.303, 'q7':       0}
+
 #	    rospy.loginfo("dh = %s" % dh)            
             # Define Modified DH Transformation matrix
 	    T0_1 = Matrix([[		    cos(q1),		 -sin(q1),		0,		a0],
