@@ -98,7 +98,7 @@ d7 = 0.303 = 0.11 + 0.193 = x(gripper_joint) + x(joint6)
 i | alpha(i-1) | a (i-1) | d (i) | q (i)
 --- | --- | --- | --- | ---
 1 | 0| 0 | 0.75| 
-2 | -pi/2| 0.35| 0| -pi/2
+2 | -pi/2| 0.35| 0| q2-pi/2
 3 | 0| 1.25| 0|
 4 | -pi/2| -0.054| 1.50| 
 5 | pi/2| 0|  0|
@@ -206,6 +206,54 @@ Create transformation matrices:
     alpha = atan2(distance_b + distance_a * cos(theta3), distance_a * sin(theta3))
     theta2 = beta - alpha
 ```
+ _Input theta1, theta2 and theta3 into DH table_
+```
+    dh['q1'] = theta1
+    dh['q2'] = theta2-pi/2
+    dh['q3'] = theta3
+```
+ _Build R0-3_
+```
+    R0_1 = Matrix([[		    cos(q1),		 -sin(q1),		0],
+			   [	sin(q1)*cos(alpha0),  cos(q1)*cos(alpha0),   -sin(alpha0)],
+			   [	sin(q1)*sin(alpha0),  cos(q1)*sin(alpha0),    cos(alpha0)]])
+
+    R1_2 = Matrix([[		    cos(q2),		 -sin(q2),		0],
+			   [	sin(q2)*cos(alpha1),  cos(q2)*cos(alpha1),   -sin(alpha1)],
+			   [	sin(q2)*sin(alpha1),  cos(q2)*sin(alpha1),    cos(alpha1)]])
+
+    R2_3 = Matrix([[		    cos(q3),		 -sin(q3),		0],
+			   [	sin(q3)*cos(alpha2),  cos(q3)*cos(alpha2),   -sin(alpha2)],
+			   [	sin(q3)*sin(alpha2),  cos(q3)*sin(alpha2),    cos(alpha2)]])
+
+    R3_4 = Matrix([[		    cos(q4),		 -sin(q4),		0],
+			   [	sin(q4)*cos(alpha3),  cos(q1)*cos(alpha3),   -sin(alpha3)],
+			   [	sin(q4)*sin(alpha3),  cos(q1)*sin(alpha3),    cos(alpha3)]])
+
+    R4_5 = Matrix([[		    cos(q5),		 -sin(q5),		0],
+			   [	sin(q5)*cos(alpha4),  cos(q2)*cos(alpha4),   -sin(alpha4)],
+			   [	sin(q5)*sin(alpha4),  cos(q2)*sin(alpha4),    cos(alpha4)]])
+
+    R5_6 = Matrix([[		    cos(q6),		 -sin(q6),		0],
+			   [	sin(q6)*cos(alpha5),  cos(q3)*cos(alpha5),   -sin(alpha5)],
+			   [	sin(q6)*sin(alpha5),  cos(q3)*sin(alpha5),    cos(alpha5)]])
+    R0_3 = simplify(R0_1 * R1_2 * R2_3)
+```
+ _Build Rrpy_
+```
+   R_roll = Matrix([[  1,	    0,	          0],
+			   [	0,  cos(roll),   -sin(roll)],
+			   [	0,  sin(roll),    cos(roll)]])
+    R_pitch = Matrix([[  cos(pitch),   0, sin(pitch)],
+			   [		  0,   1,          0],
+			   [	-sin(pitch),   0, cos(pitch)]])
+    R_yaw = Matrix([[  cos(yaw), -sin(yaw), 	0],
+			   [   sin(yaw),  cos(yaw), 	0],
+			   [	       0,   	 0,     1]])
+    Rrpy = simplify(R_roll * R_pitch * R_yaw)
+
+```
+
 ### Project Implementation
 
 #### 1. Fill in the `IK_server.py` file with properly commented python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. Your code must guide the robot to successfully complete 8/10 pick and place cycles. Briefly discuss the code you implemented and your results. 
