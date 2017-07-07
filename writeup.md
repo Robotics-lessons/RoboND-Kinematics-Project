@@ -18,7 +18,7 @@
 
 [image1]: ./misc_images/misc1.png
 [image2]: ./misc_images/misc2.png
-[image3]: ./misc_images/misc3.png
+[image3]: ./misc_images/project-result-1.png
 
 ### Kinematic Analysis
 #### 1. Run the forward_kinematics demo and evaluate the kr210.urdf.xacro file to perform kinematic analysis of Kuka KR210 robot and derive its DH parameters.
@@ -276,8 +276,10 @@ Create transformation matrices:
 ### Project Results
 
 ### 1. Can see the code generated theta1 to theta6 angle values from terminal window.
+![project results][image3]
 
 ### 2. Need to verify the code working like expection.
+
 
 
 
