@@ -185,13 +185,13 @@ def handle_calculate_IK(req):
 #	    dh['q5'] = 'q5'
 #	    dh['q6'] = 'q6'
 	    rospy.loginfo("dh = %s" % dh)  
-	    T0_1 = create_T_matrics(dh['alpha0'], dh['a0'], dh['d1'], "q1")
+	    T0_1 = create_T_matrics(dh['alpha0'], dh['a0'], dh['d1'], dh['q1'])
 	    R0_1 = T0_1.extract([0,1,2],[0,1,2])
 	    rospy.loginfo("R0_1 = %s" % R0_1) 
-	    T1_2 = create_T_matrics(dh['alpha1'], dh['a1'], dh['d2'], "q2")
+	    T1_2 = create_T_matrics(dh['alpha1'], dh['a1'], dh['d2'], dh['q2'])
 	    R1_2 = T1_2.extract([0,1,2],[0,1,2])
 	    rospy.loginfo("R1_2 = %s" % R1_2) 
-	    T2_3 = create_T_matrics(dh['alpha2'], dh['a2'], dh['d3'], "q3")
+	    T2_3 = create_T_matrics(dh['alpha2'], dh['a2'], dh['d3'], dh['q3'])
 	    R2_3 = T2_3.extract([0,1,2],[0,1,2])
 	    rospy.loginfo("R2_3 = %s" % R2_3) 
 	    R0_3 = simplify(R0_1 * R1_2 * R2_3)
