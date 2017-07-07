@@ -19,7 +19,15 @@ from geometry_msgs.msg import Pose
 from mpmath import *
 from sympy import *
 
+# Create a T matrics function
+def create_T_matrics(alpha, a, d, q):
+    T_matrics = Matrix([[	    cos(q),		-sin(q),	     0,		a],
+		[sin(q)*cos(alpha),  cos(q)*cos(alpha),   -sin(alpha), -sin(alpha)*d],
+		[sin(q)*sin(alpha),  cos(q)*sin(alpha),    cos(alpha),  cos(alpha)*d],
+		[		 0,  		 0,   		0, 		 1]])
+    return T_matrics
 
+# Calculate IK angles
 def handle_calculate_IK(req):
     rospy.loginfo("Received %s eef-poses from the plan" % len(req.poses))
     if len(req.poses) < 1:
