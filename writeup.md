@@ -269,10 +269,15 @@ Create transformation matrices:
 
 #### 1. The project Prthon code is in the [`IK_server.py`](https://github.com/Robotics-lessons/RoboND-Kinematics-Project/blob/master/kuka_arm/scripts/IK_server.py) file
 
-Fill in the `IK_server.py` file with properly commented python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. Your code must guide the robot to successfully complete 8/10 pick and place cycles. Briefly discuss the code you implemented and your results. 
+#### 2. Use roll, pitch and yaw to calculate all angles in my code, so I don't need to do the correction between Gripper Link and DH convertion.
 
+#### 3. Use function create_T_matrics(alpha, a, d, q) to create the Transformation matrix, then extract T to R matrix. This makes my code more simple and effieciat.
 
-Here I'll talk about the code, what techniques I used, what worked and why, where the implementation might fail and how I might improve it if I were going to pursue this project further.  
+### Project Results
+
+### 1. Can see the code generated theta1 to theta6 angle values from terminal window.
+
+### 2. Need to verify the code working like expection.
 
 
 
