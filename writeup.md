@@ -262,9 +262,11 @@ Create transformation matrices:
     R3_6 = simplify(R0_3.inv() * Rrpy)
 ```
  _Calculate theta4, theta5 and theta6_ 
-  The composite rotation matrix is:
+
+####  The composite rotation matrix is:
 ![rotation matrix][formula1]
-  Beta angle as:
+
+####  Beta angle as:
 ![beta][formula2]
 
 ```
