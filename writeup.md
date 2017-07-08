@@ -269,10 +269,29 @@ Create transformation matrices:
 ####  Beta angle as:
 ![beta][formula2]
 
+####  Gamma angle as:
+![gamma][formula3]
+
+####  Alpha angle as:
+![alpha][formula4]
+
+#### Here R_XYZ = R3_6:
+r31 = R3_6[2,0]
+r11 = R3_6[0,0]
+r21 = R3_6[1,0]
+r32 = R3_6[2,1]
+r33 = R3_6[2,2]
+
+
+#### Euler Angles from Rotation Matrix
 ```
-    theta5 = atan2(-R3_6[2,0], sqrt(R3_6[0,0]*R3_6[0,0] + R3_6[1,0]*R3_6[1,0]))
-    theta6 = atan2(R3_6[2,1], R3_6[2,2])
-    theta6 = atan2(R3_6[1,0], R3_6[1,1])
+    beta  = atan2(-r31, sqrt(r11 * r11 + r21 * r21))
+    gamma = atan2(r32, r33) 
+    alpha = atan2(r21, r11) 
+
+    theta5 = beta = atan2(-R3_6[2,0], sqrt(R3_6[0,0]*R3_6[0,0] + R3_6[1,0]*R3_6[1,0]))
+    theta6 = gamma = atan2(R3_6[2,1], R3_6[2,2])
+    theta4 = alpha = atan2(R3_6[1,0], R3_6[1,1])
 ```
 
 
