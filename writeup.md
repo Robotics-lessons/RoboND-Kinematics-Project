@@ -19,6 +19,10 @@
 [image1]: ./misc_images/misc1.png
 [image2]: ./misc_images/misc2.png
 [image3]: ./misc_images/project-result-1.png
+[formula1]: ./misc_images/formula-1.png
+[formula2]: ./misc_images/formula-2.png
+[formula3]: ./misc_images/formula-3.gif
+[formula4]: ./misc_images/formula-4.gif
 
 ### Kinematic Analysis
 #### 1. Run the forward_kinematics demo and evaluate the kr210.urdf.xacro file to perform kinematic analysis of Kuka KR210 robot and derive its DH parameters.
@@ -258,6 +262,11 @@ Create transformation matrices:
     R3_6 = simplify(R0_3.inv() * Rrpy)
 ```
  _Calculate theta4, theta5 and theta6_ 
+  The composite rotation matrix is:
+![rotation matrix][formula1]
+  Beta angle as:
+![beta][formula2]
+
 ```
     theta5 = atan2(-R3_6[2,0], sqrt(R3_6[0,0]*R3_6[0,0] + R3_6[1,0]*R3_6[1,0]))
     theta6 = atan2(R3_6[2,1], R3_6[2,2])
