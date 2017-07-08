@@ -276,12 +276,13 @@ Create transformation matrices:
 ![alpha][formula4]
 
 #### Here R_XYZ = R3_6:
-r31 = R3_6[2,0]
-r11 = R3_6[0,0]
-r21 = R3_6[1,0]
-r32 = R3_6[2,1]
-r33 = R3_6[2,2]
-
+```
+    r31 = R3_6[2,0]
+    r11 = R3_6[0,0]
+    r21 = R3_6[1,0]
+    r32 = R3_6[2,1]
+    r33 = R3_6[2,2]
+```
 
 #### Euler Angles from Rotation Matrix
 ```
