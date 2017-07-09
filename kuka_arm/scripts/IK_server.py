@@ -92,19 +92,19 @@ def handle_calculate_IK(req):
 	    theta1 = atan2(Wy, Wx)
 #	    rospy.loginfo("theta1 = %s" % theta1)	   
 	    s = Wz - dh['d1']
-	    r = sqrt(Wx**2+Wy**2)
+	    r = sqrt(Wx**2+Wy**2) - dh['a1'] 
 	    rospy.loginfo("s = %s" % s)
 	    rospy.loginfo("r = %s" % r)
 	    # beta angle is the angle between Joint 2 and Joint 5
    	    beta = atan2(s, r)
-    	    distance_c = sqrt(Wx**2+Wy**2+s**2)
+    	    distance_c = sqrt(r**2+s**2)
 #	    print("d4 = %s" % dh['d4'])
-    	    distance_a = dh['d4']
-    	    distance_b = dh['a2'] - dh['a3']
-    	    D = (distance_c ** 2 - distance_a ** 2 - distance_b ** 2) / (2 * distance_a * distance_b)
-    	    theta3 = atan2(D, sqrt(1 - D ** 2))
+    	    distance_a = sqrt(dh['d4']**2 + dh['a3']**2)
+    	    distance_b = dh['a2'] 
+    	    D = (distance_c ** 2 - distance_a ** 2 + distance_b ** 2) / (2 * distance_a * distance_b)
+    	    theta3 = atan2(D, sqrt(abs(1 - D ** 2)))
     	    alpha = atan2(distance_b + distance_a * cos(theta3), distance_a * sin(theta3))
-    	    theta2 = beta - alpha
+    	    theta2 = beta + alpha
 	    dh['q1'] = theta1
 	    dh['q2'] = theta2-np.pi/2
 	    dh['q3'] = theta3
@@ -141,11 +141,11 @@ def handle_calculate_IK(req):
 
 	    rospy.loginfo("R3_6 = %s" % R3_6) 
 
-	    beta = atan2(-R3_6[2,0], sqrt(R3_6[0,0]*R3_6[0,0] + R3_6[1,0]*R3_6[1,0]))
+	    beta = atan2(-R3_6[1,2], sqrt(R3_6[0,2]*R3_6[0,2] + R3_6[2,2]*R3_6[2,2]))
 #	    rospy.loginfo("beta = %s" % beta) 
-	    gamma = atan2(R3_6[2,1], R3_6[2,2])
+	    gamma = atan2(R3_6[1,1], R3_6[1,0])
 #	    rospy.loginfo("gamma = %s" % gamma) 
-	    alpha = atan2(R3_6[1,0], R3_6[1,1])
+	    alpha = atan2(R3_6[2,2], R3_6[0,2])
 #	    rospy.loginfo("alpha = %s" % alpha) 
 	    rospy.loginfo("--------------------------------------------") 
 	    theta4 = alpha
