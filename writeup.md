@@ -196,17 +196,17 @@ Create transformation matrices:
 ```
  _calculate beda angle_
 ```
-    s = Wz - dh['d1'] 
-    r = sqrt(Wx*Wx+Wy*Wy)
+    s = Wz - dh['d1'] (d1=0.75)                  - z axis distance between Joint 2 to Joint 5
+    r = sqrt(Wx*Wx+Wy*Wy) - dh['a1'] (a1=0.35)   - x axis distance between Joint 2 to Joint 5
     beta = atan2(s, r)
 ```
  _Use beta to calculate theta2 and theta3_
 ```
-    distance_c = sqrt(Wx**2+Wy**2+s**2)
-    distance_a = dh['d4']
-    distance_b = dh['a2'] - dh['a3']
-    D = (distance_c ** 2 - distance_a ** 2 - distance_b ** 2) / (2 * distance_a * distance_b)
-    theta3 = atan2(D, sqrt(1 - D ** 2))
+    distance_c = sqrt(r**2 + s**2)     - distance between Joint 2 to Joint 5
+    distance_a = dh['d4']  (d4=1.5)    - distance between Joint 3 to Joint 5
+    distance_b = dh['a2']  (a2=1.25)   - distance between Joint 2 to Joint 3
+    Cos_C = (distance_a ** 2 + distance_b ** 2 - distance_c ** 2) / (2 * distance_a * distance_b)
+    theta3 = atan2(Cos_C, sqrt(1 - Cos_C ** 2))
     alpha = atan2(distance_b + distance_a * cos(theta3), distance_a * sin(theta3))
     theta2 = beta - alpha
 ```
