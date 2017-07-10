@@ -194,7 +194,7 @@ Create transformation matrices:
 ```
     theta1 = atan2(Wy, Wx)
 ```
- _calculate beda angle_
+ _calculate beta angle_
 ```
     s = Wz - dh['d1'] (d1=0.75)                  - z axis distance between Joint 2 to Joint 5
     r = sqrt(Wx*Wx+Wy*Wy) - dh['a1'] (a1=0.35)   - x axis distance between Joint 2 to Joint 5
