@@ -275,24 +275,39 @@ Create transformation matrices:
 ####  Alpha angle as:
 ![alpha][formula4]
 
-#### Here R_XYZ = R3_6:
+#### Here R3_6_smibol:
 ```
-    r31 = R3_6[2,0]
-    r11 = R3_6[0,0]
-    r21 = R3_6[1,0]
-    r32 = R3_6[2,1]
-    r33 = R3_6[2,2]
+[    -1.0*sin(q4)*sin(q6) + cos(q4)*cos(q5)*cos(q6), -1.0*sin(q4)*cos(q6) - 1.0*sin(q6)*cos(q4)*cos(q5), -1.0*sin(q5)*cos(q4)],
+[                               1.0*sin(q5)*cos(q6),                               -1.0*sin(q5)*sin(q6),          1.0*cos(q5)],
+[-1.0*sin(q4)*cos(q5)*cos(q6) - 1.0*sin(q6)*cos(q4),  1.0*sin(q4)*sin(q6)*cos(q5) - 1.0*cos(q4)*cos(q6),  1.0*sin(q4)*sin(q5)]])
+
+```
+#### List all emlemts as:
+```
+
+	r00 = -1.0*sin(q4)*sin(q6) + cos(q4)*cos(q5)*cos(q6)
+	r01 = -1.0*sin(q4)*cos(q6) - 1.0*sin(q6)*cos(q4)*cos(q5)
+	r02 = -1.0*sin(q5)*cos(q4)
+	r10 = 1.0*sin(q5)*cos(q6)
+	r11 = -1.0*sin(q5)*sin(q6)
+	r12 = 1.0*cos(q5)
+	r20 = -1.0*sin(q4)*cos(q5)*cos(q6) - 1.0*sin(q6)*cos(q4)
+	r21 = 1.0*sin(q4)*sin(q6)*cos(q5) - 1.0*cos(q4)*cos(q6)
+	r22 = 1.0*sin(q4)*sin(q5)
 ```
 
 #### Euler Angles from Rotation Matrix
 ```
-    beta  = atan2(-r31, sqrt(r11 * r11 + r21 * r21))
-    gamma = atan2(r32, r33) 
-    alpha = atan2(r21, r11) 
+    theta6 = q6 = atan2(-sin(q6)/cos(q6))= atan2(r11/r10) = atan2(-1.0*sin(q5)*sin(q6) / 1.0*sin(q5)*cos(q6))
+    theta4 = q4 = atan2(sin(q4)/-cos(q4))= atan2(r22/r02) = atan2(1.0*sin(q4)*sin(q5) / -1.0*sin(q5)*cos(q4))
 
-    theta5 = beta = atan2(-R3_6[2,0], sqrt(R3_6[0,0]*R3_6[0,0] + R3_6[1,0]*R3_6[1,0]))
-    theta6 = gamma = atan2(R3_6[2,1], R3_6[2,2])
-    theta4 = alpha = atan2(R3_6[1,0], R3_6[1,1])
+    sin(q5) = r10 / cos(q6)
+    theta5 = q5 = atan2(r12, sqrt(r22*r22 + r02*r02))
+
+
+    theta5 = beta = atan2(-R3_6[1,2], sqrt(R3_6[2,2]^2+ R3_6[0,2]^2))
+    theta6 = gamma = atan2(R3_6[1,1], R3_6[1,0])
+    theta4 = alpha = atan2(R3_6[2,2], R3_6[0,2])
 ```
 
 
