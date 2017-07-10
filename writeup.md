@@ -184,8 +184,8 @@ Create transformation matrices:
 ```
  _calculate wrist center for x, y, z position_
 ```
-    d6 = dh['d6']
-    l =  dh['d7']
+    d6 = dh['d6']   (d6=0)
+    l =  dh['d7']   (d7=0.303)
     Wx = px - (d6 + l) * lx 
     Wy = py - (d6 + l) * ly		
     Wz = pz - (d6 + l) * lz
@@ -198,7 +198,7 @@ Create transformation matrices:
 ```
     s = Wz - dh['d1'] (d1=0.75)                  - z axis distance between Joint 2 to Joint 5
     r = sqrt(Wx*Wx+Wy*Wy) - dh['a1'] (a1=0.35)   - x axis distance between Joint 2 to Joint 5
-    beta = atan2(s, r)
+    beta = atan2(s, r)                           - beta is an angle between x axis and line from Joint 2 to Joint 5
 ```
  _Use beta to calculate theta2 and theta3_
 ```
@@ -208,7 +208,7 @@ Create transformation matrices:
     Cos_C = (distance_a ** 2 + distance_b ** 2 - distance_c ** 2) / (2 * distance_a * distance_b)
     theta3 = atan2(Cos_C, sqrt(1 - Cos_C ** 2))
     alpha = atan2(distance_b + distance_a * cos(theta3), distance_a * sin(theta3))
-    theta2 = beta - alpha
+    theta2 = beta + alpha
 ```
  _Input theta1, theta2 and theta3 into DH table_
 ```
