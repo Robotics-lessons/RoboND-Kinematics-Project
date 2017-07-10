@@ -101,8 +101,8 @@ def handle_calculate_IK(req):
 #	    print("d4 = %s" % dh['d4'])
     	    distance_a = sqrt(dh['d4']**2 + dh['a3']**2)
     	    distance_b = dh['a2'] 
-    	    D = (distance_c ** 2 - distance_a ** 2 + distance_b ** 2) / (2 * distance_a * distance_b)
-    	    theta3 = atan2(D, sqrt(abs(1 - D ** 2)))
+    	    D = (distance_a ** 2 + distance_b ** 2 - distance_c ** 2) / (2 * distance_a * distance_b)
+    	    theta3 = atan2(D, sqrt((1 - D ** 2)))
     	    alpha = atan2(distance_b + distance_a * cos(theta3), distance_a * sin(theta3))
     	    theta2 = beta + alpha
 	    dh['q1'] = theta1
