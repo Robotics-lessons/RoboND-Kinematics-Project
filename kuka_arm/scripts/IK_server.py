@@ -80,15 +80,30 @@ def handle_calculate_IK(req):
 
     	    d6 = dh['d6']
     	    l =  dh['d7']
+	    # Build Rrpy
+	    R_roll = Matrix([[  1,	    0,	          0],
+			   [	0,  cos(roll),   -sin(roll)],
+			   [	0,  sin(roll),    cos(roll)]])
+	    R_pitch = Matrix([[  cos(pitch),   0, sin(pitch)],
+			   [		  0,   1,          0],
+			   [	-sin(pitch),   0, cos(pitch)]])
+	    R_yaw = Matrix([[  cos(yaw), -sin(yaw), 	0],
+			   [   sin(yaw),  cos(yaw), 	0],
+			   [	       0,   	 0,     1]])
+	    Rrpy = simplify(R_roll * R_pitch * R_yaw)
+#	    rospy.loginfo("Rrpy = %s" % Rrpy) 
 
 	    # calculate l for x, y, z position
-            lx = cos(roll) * cos(pitch)
-            ly = sin(roll) * cos(pitch)
-    	    lz = -sin(roll)
+#            lx = cos(roll) * cos(pitch)
+#            ly = sin(roll) * cos(pitch)
+#    	    lz = -sin(roll)
+	    nx = Rrpy[0, 2]
+    	    ny = Rrpy[1, 2]
+    	    nz = Rrpy[2, 2]
 	    # calculate  wrist center x, y, z position
-    	    Wx = px - (d6 + l) * lx 
-    	    Wy = py - (d6 + l) * ly			
-    	    Wz = pz - (d6 + l) * lz
+    	    Wx = px - (d6 + l) * nx 
+    	    Wy = py - (d6 + l) * ny			
+    	    Wz = pz - (d6 + l) * nz
 	    theta1 = atan2(Wy, Wx)
 #	    rospy.loginfo("theta1 = %s" % theta1)	   
 	    s = Wz - dh['d1']
@@ -101,10 +116,14 @@ def handle_calculate_IK(req):
 #	    print("d4 = %s" % dh['d4'])
     	    distance_a = sqrt(dh['d4']**2 + dh['a3']**2)
     	    distance_b = dh['a2'] 
-    	    D = (distance_a ** 2 + distance_b ** 2 - distance_c ** 2) / (2 * distance_a * distance_b)
-    	    theta3 = atan2(D, sqrt((1 - D ** 2)))
-    	    alpha = atan2(distance_b + distance_a * cos(theta3), distance_a * sin(theta3))
-    	    theta2 = beta + alpha
+    	    D = (distance_c ** 2 - distance_a ** 2 - distance_b ** 2) / (2 * distance_a * distance_b)
+#    	    theta3 = atan2(D, sqrt((1 - D ** 2)))
+    	    theta3 = atan2(-sqrt((1 - D ** 2)), D)
+#    	    alpha = atan2(distance_b + distance_a * cos(theta3), distance_a * sin(theta3))
+    	    alpha = atan2(distance_a * sin(theta3), distance_b + distance_a * cos(theta3))
+    	    theta2 = (beta - alpha)
+	    theta3 = -(theta3 + np.pi/2)
+   	    theta2 = np.pi/2 - theta2
 	    dh['q1'] = theta1
 	    dh['q2'] = theta2-np.pi/2
 	    dh['q3'] = theta3
@@ -122,19 +141,6 @@ def handle_calculate_IK(req):
 	    # create R0_3
 	    R0_3 = simplify(R0_1 * R1_2 * R2_3)
 	#    rospy.loginfo("R0_3 = %s" % R0_3) 
-
-	    # Build Rrpy
-	    R_roll = Matrix([[  1,	    0,	          0],
-			   [	0,  cos(roll),   -sin(roll)],
-			   [	0,  sin(roll),    cos(roll)]])
-	    R_pitch = Matrix([[  cos(pitch),   0, sin(pitch)],
-			   [		  0,   1,          0],
-			   [	-sin(pitch),   0, cos(pitch)]])
-	    R_yaw = Matrix([[  cos(yaw), -sin(yaw), 	0],
-			   [   sin(yaw),  cos(yaw), 	0],
-			   [	       0,   	 0,     1]])
-	    Rrpy = simplify(R_roll * R_pitch * R_yaw)
-#	    rospy.loginfo("Rrpy = %s" % Rrpy) 
 
 	    # Calculate R3_6 using inv(R0_3) * Rrpy
 	    R3_6 = simplify(R0_3.inv() * Rrpy)
