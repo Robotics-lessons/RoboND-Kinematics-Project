@@ -69,12 +69,12 @@ def handle_calculate_IK(req):
             px = req.poses[x].position.x
             py = req.poses[x].position.y
             pz = req.poses[x].position.z    
-
+	    rospy.loginfo("============== px = %.6f, py = %.6f, pz = %.6f," % (px, py, pz))  
 	    # calculate roll, pitch, yaw value
             (roll, pitch, yaw) = tf.transformations.euler_from_quaternion(
                 [req.poses[x].orientation.x, req.poses[x].orientation.y,
                     req.poses[x].orientation.z, req.poses[x].orientation.w])
-#     	    rospy.loginfo("Received %s eef-poses.orientation from the plan" % req.poses[x].orientation)
+     	    rospy.loginfo("Received %s eef-poses.orientation from the plan" % req.poses[x].orientation)
 
             # Calculate joint angles using Geometric IK method
 
@@ -118,7 +118,7 @@ def handle_calculate_IK(req):
     	    distance_b = dh['a2'] 
     	    D = (distance_c ** 2 - distance_a ** 2 - distance_b ** 2) / (2 * distance_a * distance_b)
 #    	    theta3 = atan2(D, sqrt((1 - D ** 2)))
-    	    theta3 = atan2(-sqrt((1 - D ** 2)), D)
+    	    theta3 = atan2(-sqrt(abs(1 - D ** 2)), D)
 #    	    alpha = atan2(distance_b + distance_a * cos(theta3), distance_a * sin(theta3))
     	    alpha = atan2(distance_a * sin(theta3), distance_b + distance_a * cos(theta3))
     	    theta2 = (beta - alpha)
@@ -157,12 +157,12 @@ def handle_calculate_IK(req):
 	    theta4 = alpha
 	    theta5 = beta
 	    theta6 = gamma
-	    rospy.loginfo("theta1 = %s" % theta1)
-	    rospy.loginfo("theta2 = %s" % theta2)
-	    rospy.loginfo("theta3 = %s" % theta3)
-	    rospy.loginfo("theta4 = %s" % theta4)
-	    rospy.loginfo("theta5 = %s" % theta5)
-	    rospy.loginfo("theta6 = %s" % theta6)
+	    rospy.loginfo("theta1 = %.4f" % theta1)
+	    rospy.loginfo("theta2 = %.4f" % theta2)
+	    rospy.loginfo("theta3 = %.4f" % theta3)
+	    rospy.loginfo("theta4 = %.4f" % theta4)
+	    rospy.loginfo("theta5 = %.4f" % theta5)
+	    rospy.loginfo("theta6 = %.4f" % theta6)
 
             # Populate response for the IK request
             # In the next line replace theta1,theta2...,theta6 by your joint angle variables
