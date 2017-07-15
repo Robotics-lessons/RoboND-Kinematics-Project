@@ -22,14 +22,19 @@ I have to zip the folder and upload this zip file to review.
 
 ## Add a new file to github.com directly and snyc with locasl repository.
  1. Create a new file on local PC
+
  2. Go to the project and folder which saves the file on github.com
+
  3. Upload the file and commit.
+
  4. Run git pull origin master command on your local PC
- 5. The test code will display calculated angle results with expected angle results
+ 
 
 
 ## Collect the project testing data and run testing program
+
  1. Run _roslaunch kuka_arm forward_kinematics.launch_
+
  2. Add these data in test.py code
  ```
  # inputdata format: [px, py pz, x, y, z, w]
@@ -41,6 +46,8 @@ I have to zip the folder and upload this zip file to review.
 
  ```
  3. Run _python test.py_ command
+
+ 4. The test code will display calculated angle results with expected angle results
  Example:
 ```
 [INFO] [1500130811.462120]: Theta 1 = 0.1104, expected answer = 0.11
