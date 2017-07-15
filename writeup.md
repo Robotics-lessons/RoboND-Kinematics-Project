@@ -176,19 +176,54 @@ Create transformation matrices:
 ```
  Calculate joint angles using Geometric IK method
  
- _calculate l for x, y, z position_
+ _build Rrpy_
 ```
-    lx = cos(roll) * cos(pitch)
-    ly = sin(roll) * cos(pitch)
-    lz = -sin(roll)
+	    R_roll = Matrix([[  1,	    0,	          0],
+			   [	0,  cos(roll),   -sin(roll)],
+			   [	0,  sin(roll),    cos(roll)]])
+	    R_pitch = Matrix([[  cos(pitch),   0, sin(pitch)],
+			   [		  0,   1,          0],
+			   [	-sin(pitch),   0, cos(pitch)]])
+	    R_yaw = Matrix([[  cos(yaw), -sin(yaw), 	0],
+			   [   sin(yaw),  cos(yaw), 	0],
+			   [	       0,   	 0,     1]])
+
+	    Rrpy = simplify(R_yaw * R_pitch * R_roll)
+```
+
+ _define a correction between Gripper Link and DH convertion_
+```
+    	    R_z = Matrix([[	cos(np.pi),    -sin(np.pi),		0,	0],
+			  [	sin(np.pi),	cos(np.pi),		0,	0],
+			  [		 0,		 0,		1,	0],
+			  [		 0,		 0,		0,	1]])
+
+    	    R_y = Matrix([[  cos(-np.pi/2),    		 0, sin(-np.pi/2),	0],
+			  [		 0,		 1,		0,	0],
+			  [ -sin(-np.pi/2),	         0, cos(-np.pi/2),	0],
+			  [		 0,		 0,		0,	1]])	
+```
+
+ _create a correction matrix_
+```
+    	    R_correct = simplify(R_z * R_y)
+
+	    Rrpy = simplify(Rrpy * R_correct[0:3,0:3])
+```
+
+ _calculate n column for x, y, z position_
+```
+	    nx = Rrpy[0, 2]
+    	    ny = Rrpy[1, 2]
+    	    nz = Rrpy[2, 2]
 ```
  _calculate wrist center for x, y, z position_
 ```
     d6 = dh['d6']   (d6=0)
     l =  dh['d7']   (d7=0.303)
-    Wx = px - (d6 + l) * lx 
-    Wy = py - (d6 + l) * ly		
-    Wz = pz - (d6 + l) * lz
+    Wx = px - (d6 + l) * nx 
+    Wy = py - (d6 + l) * ny		
+    Wz = pz - (d6 + l) * nz
 ```
  _calculate theta 1 angle_
 ```
