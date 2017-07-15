@@ -35,7 +35,10 @@ I have to zip the folder and upload this zip file to review.
 
  1. Run _roslaunch kuka_arm forward_kinematics.launch_
 
- 2. Add these data in test.py code
+ 2. Go scripts folder
+    cd ~/catkin_ws/src/RoboND-Kinematics-Project/kuka_arm/scripts
+
+ 3. Add these data in test.py code
  ```
  # inputdata format: [px, py pz, x, y, z, w]
  inputdata = [[2.3146, 0.11282, 2.1129, -0.24965, 0.41624, -0.11376, 0.86688],
@@ -45,9 +48,11 @@ I have to zip the folder and upload this zip file to review.
         [0, 0, 0, 0, 0, 0, 0]]
 
  ```
- 3. Run _python test.py_ command
+ 4. Run _roscore_ command first
 
- 4. The test code will display calculated angle results with expected angle results
+ 5. Run _python test.py_ command
+
+ 6. The test code will display calculated angle results with expected angle results
  Example:
 ```
 [INFO] [1500130811.462120]: Theta 1 = 0.1104, expected answer = 0.11
