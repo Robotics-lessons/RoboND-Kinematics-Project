@@ -284,20 +284,7 @@ Create transformation matrices:
 			   [	sin(q6)*sin(alpha5),  cos(q3)*sin(alpha5),    cos(alpha5)]])
     R0_3 = simplify(R0_1 * R1_2 * R2_3)
 ```
- _Build Rrpy_
-```
-   R_roll = Matrix([[  1,	    0,	          0],
-			   [	0,  cos(roll),   -sin(roll)],
-			   [	0,  sin(roll),    cos(roll)]])
-    R_pitch = Matrix([[  cos(pitch),   0, sin(pitch)],
-			   [		  0,   1,          0],
-			   [	-sin(pitch),   0, cos(pitch)]])
-    R_yaw = Matrix([[  cos(yaw), -sin(yaw), 	0],
-			   [   sin(yaw),  cos(yaw), 	0],
-			   [	       0,   	 0,     1]])
-    Rrpy = simplify(R_roll * R_pitch * R_yaw)
 
-```
  _Calculatr R3-6_
 ```
     R3_6 = simplify(R0_3.inv() * Rrpy)
