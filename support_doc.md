@@ -63,5 +63,15 @@ I have to zip the folder and upload this zip file to review.
 [INFO] [1500130811.465021]: Theta 6 = 0.1575, expected answer = -0.07
 ```
 
+## Start Ubuntu virtual machine 
+ 1. Click VMware wrkstation icon on PC desktop
+
+ 2. Select Ubuntu 64-bit Robo V2.0.1 to start the kinematics project
+
+ 3. Use Ctl + Alt + t to invoke a terminal
+
+ 4. Use . ./go.sh to set running environemnt and go to project folder
+
+
 
 
