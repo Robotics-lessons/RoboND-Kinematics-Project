@@ -244,7 +244,10 @@ Create transformation matrices:
     distance_b = dh['a2']  (a2=1.25)                                  - distance between Joint 2 to Joint 3
     Cos_C = (distance_a ** 2 + distance_b ** 2 - distance_c ** 2) / (2 * distance_a * distance_b)
     theta3 = atan2(Cos_C, sqrt(1 - Cos_C ** 2))
-    alpha = atan2(distance_b + distance_a * cos(theta3), distance_a * sin(theta3))
+    b' = distance_a * cos(pi - theta3)
+    a' = distance_a * sin(pi - theta3)
+    alpha = atan2(distance_b + distance_a * cos(pi - theta3), distance_a * sin(pi - theta3)) 
+          = atan2(distance_b + b', a')
     theta2 = beta + alpha
 ```
  _Input theta1, theta2 and theta3 into DH table_
