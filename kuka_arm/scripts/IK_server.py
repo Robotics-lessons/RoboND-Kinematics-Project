@@ -39,11 +39,25 @@ def handle_calculate_IK(req):
 	# Conversion Factors
 	rtd = 180./np.pi # radians to degrees
 	dtr = np.pi/180. # degrees to radians
-	lenth = len(req.poses)
+
+	# Define a correction between Gripper Link and WC
+    	R_z = Matrix([[	cos(np.pi),    -sin(np.pi),		0,	0],
+			  [	sin(np.pi),	cos(np.pi),		0,	0],
+			  [		 0,		 0,		1,	0],
+			  [		 0,		 0,		0,	1]])
+
+    	R_y = Matrix([[  cos(-np.pi/2),    		 0, sin(-np.pi/2),	0],
+			  [		 0,		 1,		0,	0],
+			  [ -sin(-np.pi/2),	         0, cos(-np.pi/2),	0],
+			  [		 0,		 0,		0,	1]])	
+
+	# Create a correction matrix
+    	R_correct = simplify(R_z * R_y)
+
         for x in xrange(0, len(req.poses)):
             # IK code starts here
             joint_trajectory_point = JointTrajectoryPoint()
-	    rospy.loginfo("x = %d and total len = %d" % (x , lenth))
+	    rospy.loginfo("x = %d and total len = %d" % (x , len(req.poses)))
             # Define DH param symbols
 	    q1, q2, q3, q4, q5, q6, q7 = symbols('q1:8')
 	    d1, d2, d3, d4, d5, d6, d7 = symbols('d1:8')
@@ -93,26 +107,11 @@ def handle_calculate_IK(req):
 	    Rrpy = simplify(R_yaw * R_pitch * R_roll)
 
 #	    rospy.loginfo("Rrpy = %s" % Rrpy) 
-	    # Define a correction between Gripper Link and DH convertion
-    	    R_z = Matrix([[	cos(np.pi),    -sin(np.pi),		0,	0],
-			  [	sin(np.pi),	cos(np.pi),		0,	0],
-			  [		 0,		 0,		1,	0],
-			  [		 0,		 0,		0,	1]])
 
-    	    R_y = Matrix([[  cos(-np.pi/2),    		 0, sin(-np.pi/2),	0],
-			  [		 0,		 1,		0,	0],
-			  [ -sin(-np.pi/2),	         0, cos(-np.pi/2),	0],
-			  [		 0,		 0,		0,	1]])	
-
-	    # Create a correction matrix
-    	    R_correct = simplify(R_z * R_y)
-
+            # Apply the correction
 	    Rrpy = simplify(Rrpy * R_correct[0:3,0:3])
 
-	    # calculate l for x, y, z position
-#            lx = cos(roll) * cos(pitch)
-#            ly = sin(roll) * cos(pitch)
-#    	    lz = -sin(roll)
+	    # calculate n for x, y, z position
 
 	    nx = Rrpy[0, 2]
     	    ny = Rrpy[1, 2]
@@ -120,17 +119,21 @@ def handle_calculate_IK(req):
 
    	    d6 = dh['d6']
     	    l =  dh['d7']
+
 	    # calculate  wrist center x, y, z position
     	    Wx = px - (d6 + l) * nx 
     	    Wy = py - (d6 + l) * ny			
     	    Wz = pz - (d6 + l) * nz
-            rospy.loginfo("Wx = %.4f answer = 2.1245, Wy = %.4f answer = 0.23555, Wz = %.4f answer = 2.3144" % (Wx, Wy, Wz))	
+            rospy.loginfo("Wx = %.4f answer = 2.1245, Wy = %.4f answer = 0.23555, Wz = %.4f answer = 2.3144" % (Wx, Wy, Wz))
+#            rospy.loginfo("Wx = %.4f, Wy = %.4f , Wz = %.4f " % (Wx, Wy, Wz))
+            # calculate theta 1	
 	    theta1 = atan2(Wy, Wx)
-	    rospy.loginfo("theta1 = %.4f" % theta1)	   
+#	    rospy.loginfo("theta1 = %.4f" % theta1)	   
 	    s = Wz - dh['d1']
 	    r = sqrt(Wx**2+Wy**2) - dh['a1'] 
 	    rospy.loginfo("s = %s, r = %s" % (s, r))
-	    # beta angle is the angle between Joint 2 and Joint 5
+
+	    # beta angle is the angle between Joint 2 and Joint 5:WC
    	    beta = atan2(s, r)
     	    distance_c = sqrt(r**2+s**2)
 #	    print("d4 = %s" % dh['d4'])
@@ -139,22 +142,24 @@ def handle_calculate_IK(req):
 
 
 #    	    alpha = atan2(distance_b + distance_a * cos(np.pi - theta3), distance_a * sin(np.pi - theta3))
+            # calculate theta 2	
             Cos_alpha = (distance_c ** 2 + distance_b ** 2 - distance_a ** 2 ) / (2 * distance_c * distance_b)
             C_alpha = atan2(sqrt(abs(1 - Cos_alpha ** 2)), Cos_alpha)
     	    theta2 = np.pi/2 - beta - C_alpha
 
+            # calculate theta 3	
     	    D = (distance_a ** 2 + distance_b ** 2 - distance_c ** 2 ) / (2 * distance_a * distance_b)
     	    theta3 = atan2(D, sqrt(abs(1 - D ** 2)))
 #    	    theta3 = atan2(sqrt(abs(1 - D ** 2)), D)
-	#    theta3 = np.pi - theta3
-  	#    theta2 = np.pi/2 - theta2
-#	    rospy.loginfo("theta2 = %.4f" % theta2)
-#	    rospy.loginfo("theta03 = %.4f" % theta03)
+
+            # set HD table q1 to q3	
 	    dh['q1'] = theta1
 	    dh['q2'] = theta2-np.pi/2
 	    dh['q3'] = theta3
+
 	    # DH table with q1, q2 and q3 value
-	    rospy.loginfo("dh = %s" % dh)  
+	    rospy.loginfo("dh = %s" % dh) 
+ 
 	    T0_1 = create_T_matrics(dh['alpha0'], dh['a0'], dh['d1'], dh['q1'])
 	    R0_1 = T0_1.extract([0,1,2],[0,1,2])
 	 #   rospy.loginfo("R0_1 = %s" % R0_1) 
@@ -164,6 +169,7 @@ def handle_calculate_IK(req):
 	    T2_3 = create_T_matrics(dh['alpha2'], dh['a2'], dh['d3'], dh['q3'])
 	    R2_3 = T2_3.extract([0,1,2],[0,1,2])
 	#    rospy.loginfo("R2_3 = %s" % R2_3) 
+
 	    # create R0_3
 	    R0_3 = simplify(R0_1 * R1_2 * R2_3)
 	#    rospy.loginfo("R0_3 = %s" % R0_3) 
@@ -171,7 +177,7 @@ def handle_calculate_IK(req):
 	    # Calculate R3_6 using inv(R0_3) * Rrpy
 	    R3_6 = simplify(R0_3.inv() * Rrpy)
 
-	    rospy.loginfo("R3_6 = %s" % R3_6) 
+#	    rospy.loginfo("R3_6 = %s" % R3_6) 
 
 	    beta = atan2(-R3_6[1,2], sqrt(R3_6[0,2]*R3_6[0,2] + R3_6[2,2]*R3_6[2,2]))
 #	    rospy.loginfo("beta = %s" % beta) 
@@ -179,16 +185,17 @@ def handle_calculate_IK(req):
 #	    rospy.loginfo("gamma = %s" % gamma) 
 	    alpha = atan2(R3_6[2,2], R3_6[0,2])
 #	    rospy.loginfo("alpha = %s" % alpha) 
-	    rospy.loginfo("--------------------------------------------") 
+#	    rospy.loginfo("--------------------------------------------") 
 	    theta4 = alpha
 	    theta5 = beta
 	    theta6 = gamma
-	    rospy.loginfo("theta1 = %.4f" % theta1)
-	    rospy.loginfo("theta2 = %.4f" % theta2)
-	    rospy.loginfo("theta3 = %.4f" % theta3)
-	    rospy.loginfo("theta4 = %.4f" % theta4)
-	    rospy.loginfo("theta5 = %.4f" % theta5)
-	    rospy.loginfo("theta6 = %.4f" % theta6)
+
+#	    rospy.loginfo("theta1 = %.4f" % theta1)
+#	    rospy.loginfo("theta2 = %.4f" % theta2)
+#	    rospy.loginfo("theta3 = %.4f" % theta3)
+#	    rospy.loginfo("theta4 = %.4f" % theta4)
+#	    rospy.loginfo("theta5 = %.4f" % theta5)
+#	    rospy.loginfo("theta6 = %.4f" % theta6)
 
             # Populate response for the IK request
             # In the next line replace theta1,theta2...,theta6 by your joint angle variables
