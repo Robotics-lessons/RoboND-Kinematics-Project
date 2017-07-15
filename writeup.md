@@ -242,13 +242,14 @@ Create transformation matrices:
     distance_c = sqrt(r^2 + s^2)                                      - distance between Joint 2 to Joint 5
     distance_a = sqrt(dh['d4']^2 + dh['a3']^2)  (d4=1.5, a3=-0.054)   - distance between Joint 3 to Joint 5
     distance_b = dh['a2']  (a2=1.25)                                  - distance between Joint 2 to Joint 3
+
+    Cos_alpha = (distance_c ** 2 + distance_b ** 2 - distance_a ** 2 ) / (2 * distance_c * distance_b)
+    alpha = atan2(sqrt(abs(1 - Cos_alpha ** 2)), Cos_alpha)
+    theta2 = np.pi/2 - beta - alpha
+
     Cos_C = (distance_a ** 2 + distance_b ** 2 - distance_c ** 2) / (2 * distance_a * distance_b)
     theta3 = atan2(Cos_C, sqrt(1 - Cos_C ** 2))
-    b' = distance_a * cos(pi - theta3)
-    a' = distance_a * sin(pi - theta3)
-    alpha = atan2(distance_b + distance_a * cos(pi - theta3), distance_a * sin(pi - theta3)) 
-          = atan2(distance_b + b', a')
-    theta2 = beta + alpha
+
 ```
  _Input theta1, theta2 and theta3 into DH table_
 ```
