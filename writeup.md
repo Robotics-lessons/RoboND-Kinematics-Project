@@ -17,7 +17,7 @@
 [//]: # (Image References)
 
 [image1]: ./misc_images/misc1.png
-[image2]: ./misc_images/misc2.png
+[image2]: ./misc_images/triangle.png
 [image3]: ./misc_images/project-result-1.png
 [formula1]: ./misc_images/formula-1.png
 [formula2]: ./misc_images/formula-2.png
@@ -229,6 +229,8 @@ Create transformation matrices:
 ```
     theta1 = atan2(Wy, Wx)
 ```
+![triangle formulas][image2]
+
  _calculate beta angle_
 ```
     s = Wz - dh['d1'] (d1=0.75)                  - z axis distance between Joint 2 to Joint 5
