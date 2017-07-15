@@ -25,6 +25,8 @@ I have to zip the folder and upload this zip file to review.
  2. Go to the project and folder which saves the file on github.com
  3. Upload the file and commit.
  4. Run git pull origin master command on your local PC
+ 5. The test code will display calculated angle results with expected angle results
+
 
 ## Collect the project testing data and run testing program
  1. Run _roslaunch kuka_arm forward_kinematics.launch_
@@ -39,5 +41,15 @@ I have to zip the folder and upload this zip file to review.
 
  ```
  3. Run _python test.py_ command
+ Example:
+```
+[INFO] [1500130811.462120]: Theta 1 = 0.1104, expected answer = 0.11
+[INFO] [1500130811.462485]: Theta 2 = 0.2671, expected answer = 0.27
+[INFO] [1500130811.463203]: Theta 3 = -0.5085, expected answer = -0.54
+[INFO] [1500130811.464455]: Theta 4 = -2.6846, expected answer = -0.53
+[INFO] [1500130811.464794]: Theta 5 = -0.3820, expected answer = 1.19
+[INFO] [1500130811.465021]: Theta 6 = 0.1575, expected answer = -0.07
+```
+
 
 
