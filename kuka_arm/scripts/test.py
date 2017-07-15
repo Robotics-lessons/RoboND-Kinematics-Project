@@ -6,8 +6,10 @@ import geometry_msgs.msg
 from datetime import datetime
 import IK_server
 
+# inputdata format: [px, py pz, x, y, z, w]
 inputdata = [[2.3146, 0.11282, 2.1129, -0.24965, 0.41624, -0.11376, 0.86688],
         [2.15, 0, 1.94, 0, 0, 0, 1]]
+# outputdata format: [theta1, theta2, theta3, theta4, theta5, theta6]
 outputdata = [[0.11, 0.27, -0.54, -0.53, 1.19, -0.07],
         [0, 0, 0, 0, 0, 0, 0]]
 
