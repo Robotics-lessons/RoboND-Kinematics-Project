@@ -78,8 +78,7 @@ def handle_calculate_IK(req):
 
             # Calculate joint angles using Geometric IK method
 
-    	    d6 = dh['d6']
-    	    l =  dh['d7']
+ 
 	    # Build Rrpy
 	    R_roll = Matrix([[  1,	    0,	          0],
 			   [	0,  cos(roll),   -sin(roll)],
@@ -90,40 +89,67 @@ def handle_calculate_IK(req):
 	    R_yaw = Matrix([[  cos(yaw), -sin(yaw), 	0],
 			   [   sin(yaw),  cos(yaw), 	0],
 			   [	       0,   	 0,     1]])
-	    Rrpy = simplify(R_roll * R_pitch * R_yaw)
+#	    Rrpy = simplify(R_roll * R_pitch * R_yaw)
+	    Rrpy = simplify(R_yaw * R_pitch * R_roll)
+
 #	    rospy.loginfo("Rrpy = %s" % Rrpy) 
+	    # Define a correction between Gripper Link and DH convertion
+    	    R_z = Matrix([[	cos(np.pi),    -sin(np.pi),		0,	0],
+			  [	sin(np.pi),	cos(np.pi),		0,	0],
+			  [		 0,		 0,		1,	0],
+			  [		 0,		 0,		0,	1]])
+
+    	    R_y = Matrix([[  cos(-np.pi/2),    		 0, sin(-np.pi/2),	0],
+			  [		 0,		 1,		0,	0],
+			  [ -sin(-np.pi/2),	         0, cos(-np.pi/2),	0],
+			  [		 0,		 0,		0,	1]])	
+
+	    # Create a correction matrix
+    	    R_correct = simplify(R_z * R_y)
+
+	    Rrpy = simplify(Rrpy * R_correct[0:3,0:3])
 
 	    # calculate l for x, y, z position
 #            lx = cos(roll) * cos(pitch)
 #            ly = sin(roll) * cos(pitch)
 #    	    lz = -sin(roll)
+
 	    nx = Rrpy[0, 2]
     	    ny = Rrpy[1, 2]
     	    nz = Rrpy[2, 2]
+
+   	    d6 = dh['d6']
+    	    l =  dh['d7']
 	    # calculate  wrist center x, y, z position
     	    Wx = px - (d6 + l) * nx 
     	    Wy = py - (d6 + l) * ny			
     	    Wz = pz - (d6 + l) * nz
+            rospy.loginfo("Wx = %.4f answer = 2.1245, Wy = %.4f answer = 0.23555, Wz = %.4f answer = 2.3144" % (Wx, Wy, Wz))	
 	    theta1 = atan2(Wy, Wx)
-#	    rospy.loginfo("theta1 = %s" % theta1)	   
+	    rospy.loginfo("theta1 = %.4f" % theta1)	   
 	    s = Wz - dh['d1']
 	    r = sqrt(Wx**2+Wy**2) - dh['a1'] 
-	    rospy.loginfo("s = %s" % s)
-	    rospy.loginfo("r = %s" % r)
+	    rospy.loginfo("s = %s, r = %s" % (s, r))
 	    # beta angle is the angle between Joint 2 and Joint 5
    	    beta = atan2(s, r)
     	    distance_c = sqrt(r**2+s**2)
 #	    print("d4 = %s" % dh['d4'])
     	    distance_a = sqrt(dh['d4']**2 + dh['a3']**2)
     	    distance_b = dh['a2'] 
-    	    D = (distance_c ** 2 - distance_a ** 2 - distance_b ** 2) / (2 * distance_a * distance_b)
-#    	    theta3 = atan2(D, sqrt((1 - D ** 2)))
-    	    theta3 = atan2(-sqrt(abs(1 - D ** 2)), D)
-#    	    alpha = atan2(distance_b + distance_a * cos(theta3), distance_a * sin(theta3))
-    	    alpha = atan2(distance_a * sin(theta3), distance_b + distance_a * cos(theta3))
-    	    theta2 = (beta - alpha)
-	    theta3 = -(theta3 + np.pi/2)
-   	    theta2 = np.pi/2 - theta2
+
+
+#    	    alpha = atan2(distance_b + distance_a * cos(np.pi - theta3), distance_a * sin(np.pi - theta3))
+            Cos_alpha = (distance_c ** 2 + distance_b ** 2 - distance_a ** 2 ) / (2 * distance_c * distance_b)
+            C_alpha = atan2(sqrt(abs(1 - Cos_alpha ** 2)), Cos_alpha)
+    	    theta2 = np.pi/2 - beta - C_alpha
+
+    	    D = (distance_a ** 2 + distance_b ** 2 - distance_c ** 2 ) / (2 * distance_a * distance_b)
+    	    theta3 = atan2(D, sqrt(abs(1 - D ** 2)))
+#    	    theta3 = atan2(sqrt(abs(1 - D ** 2)), D)
+	#    theta3 = np.pi - theta3
+  	#    theta2 = np.pi/2 - theta2
+#	    rospy.loginfo("theta2 = %.4f" % theta2)
+#	    rospy.loginfo("theta03 = %.4f" % theta03)
 	    dh['q1'] = theta1
 	    dh['q2'] = theta2-np.pi/2
 	    dh['q3'] = theta3
